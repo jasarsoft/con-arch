@@ -22,6 +22,9 @@ namespace ConfArch.Web.Areas.Identity
 
                 services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<ConfArchWebContext>();
+
+                services
+                    .AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
             });
         }
     }
