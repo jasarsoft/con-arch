@@ -29,10 +29,14 @@
                 <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
             }
         </div>
-    </div>
-        <div>
-            @RenderBody()
+        <div class="col-md-2 titlecol">
+            <partial name="_LoginPartial"/>
         </div>
     </div>
+    <div>
+        @RenderBody()
+    </div>
+</div>
 </body>
+@RenderSection("scripts", false)
 </html>
