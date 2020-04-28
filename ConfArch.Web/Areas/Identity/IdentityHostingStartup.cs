@@ -4,6 +4,7 @@ using ConfArch.Web.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ namespace ConfArch.Web.Areas.Identity
                     .AddDefaultUI()
                     .AddDefaultTokenProviders();
 
+                services.AddTransient<IEmailSender, EmailSender>();
                 services
                     .AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
             });
