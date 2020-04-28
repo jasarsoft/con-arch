@@ -8,10 +8,10 @@ using Microsoft.Extensions.Options;
 
 namespace ConfArch.Web.Areas.Identity
 {
-    public class ApplicationUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser>
+    public class ApplicationUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser, IdentityRole>
     {
-        public ApplicationUserClaimsPrincipalFactory(UserManager<ApplicationUser> userManager, IOptions<IdentityOptions> options) 
-            : base(userManager, options)
+        public ApplicationUserClaimsPrincipalFactory(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityOptions> options) 
+            : base(userManager, roleManager, options)
         {
             
         }

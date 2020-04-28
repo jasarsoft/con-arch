@@ -20,8 +20,11 @@ namespace ConfArch.Web.Areas.Identity
                     options.UseSqlServer(
                         context.Configuration.GetConnectionString("ConfArchWebContextConnection")));
 
-                services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddEntityFrameworkStores<ConfArchWebContext>();
+                services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                        options.SignIn.RequireConfirmedAccount = true)
+                    .AddEntityFrameworkStores<ConfArchWebContext>()
+                    .AddDefaultUI()
+                    .AddDefaultTokenProviders();
 
                 services
                     .AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
