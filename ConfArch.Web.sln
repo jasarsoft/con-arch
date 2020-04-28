@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfArch.Web", "ConfArch.Web\ConfArch.Web.csproj", "{EA03F817-A5C4-47C5-8871-6285ECD89F92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfArch.Data", "ConfArch.Data\ConfArch.Data.csproj", "{14E4D674-BA78-4852-964B-232CB72E96BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfArch.Data", "ConfArch.Data\ConfArch.Data.csproj", "{14E4D674-BA78-4852-964B-232CB72E96BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityExploration", "IdentityExploration\IdentityExploration.csproj", "{520CA4DA-49D3-4972-900A-4CC0CB3325B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{14E4D674-BA78-4852-964B-232CB72E96BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14E4D674-BA78-4852-964B-232CB72E96BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14E4D674-BA78-4852-964B-232CB72E96BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{520CA4DA-49D3-4972-900A-4CC0CB3325B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{520CA4DA-49D3-4972-900A-4CC0CB3325B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{520CA4DA-49D3-4972-900A-4CC0CB3325B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{520CA4DA-49D3-4972-900A-4CC0CB3325B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
