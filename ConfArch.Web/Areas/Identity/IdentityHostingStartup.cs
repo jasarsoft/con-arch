@@ -30,6 +30,14 @@ namespace ConfArch.Web.Areas.Identity
                 services.AddTransient<IEmailSender, EmailSender>();
                 services
                     .AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
+
+                services.AddAuthentication()
+                    .AddGoogle(o =>
+                    {
+                        o.SignInScheme = ExternalAuthenticationDefaults.AuthenticationScheme;
+                        o.ClientId = "686977813024-1pabqkfoar3btu6tsh7puhu3pogcivi0.apps.googleusercontent.com";
+                        o.ClientSecret = "VutGrq8bRdIlB4X13vxiWWwj";
+                    });
             });
         }
     }
