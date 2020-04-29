@@ -1,6 +1,8 @@
 using ConfArch.Data;
 using ConfArch.Data.Repositories;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -22,7 +24,7 @@ namespace ConfArch.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews(/*o => o.Filters.Add(new AuthorizeFilter())*/);
+            services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
             services.AddRazorPages();
             services.AddScoped<IConferenceRepository, ConferenceRepository>();
             services.AddScoped<IProposalRepository, ProposalRepository>();
@@ -32,6 +34,37 @@ namespace ConfArch.Web
             services.AddDbContext<ConfArchDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), 
                     assembly => assembly.MigrationsAssembly(typeof(ConfArchDbContext).Assembly.FullName)));
+
+            services.AddAuthentication(o =>
+                {
+                    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                })
+                .AddCookie()
+                .AddOpenIdConnect(options =>
+                {
+                    options.Authority = "https://localhost:5000";
+                    options.ClientId = "confarch_web";
+                    options.ClientSecret = "8EA7DDAB-9C60-43C2-B316-DA09AF440777";
+                    options.CallbackPath = "/signin-oidc";
+
+                    options.Scope.Add("confarch");
+                    options.Scope.Add("confarch_api");
+
+                    options.SaveTokens = true;
+
+                    options.GetClaimsFromUserInfoEndpoint = true;
+                    options.ClaimActions.MapUniqueJsonKey("CareerStarted", "CareerStarted");
+                    options.ClaimActions.MapUniqueJsonKey("FullName", "FullName");
+                    options.ClaimActions.MapUniqueJsonKey("Role", "role");
+                    options.ClaimActions.MapUniqueJsonKey("Permission", "Permission");
+
+                    options.ResponseType = "code";
+                    options.ResponseMode = "form_post";
+
+                    options.UsePkce = true;
+
+                });
 
             //services.AddAuthentication(o =>
             //    {
