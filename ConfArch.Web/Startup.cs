@@ -1,10 +1,14 @@
+using System;
+using System.Net.Http.Headers;
 using ConfArch.Data;
 using ConfArch.Data.Repositories;
+using ConfArch.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -45,7 +49,7 @@ namespace ConfArch.Web
                 {
                     options.Authority = "https://localhost:5000";
                     options.ClientId = "confarch_web";
-                    options.ClientSecret = "8EA7DDAB-9C60-43C2-B316-DA09AF440777";
+                    options.ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
                     options.CallbackPath = "/signin-oidc";
 
                     options.Scope.Add("confarch");
@@ -65,6 +69,17 @@ namespace ConfArch.Web
                     options.UsePkce = true;
 
                 });
+
+            services.AddHttpContextAccessor();
+            services.AddHttpClient<IConfArchApiService, ConfArchApiService>(
+                async (services, client) =>
+                {
+                    var accessor = services.GetRequiredService<IHttpContextAccessor>();
+                    var accessToken = await accessor.HttpContext.GetTokenAsync("access_token");
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
+                    client.BaseAddress = new Uri("https://localhost:5002");
+                }
+            );
 
             //services.AddAuthentication(o =>
             //    {
