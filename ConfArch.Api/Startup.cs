@@ -25,12 +25,22 @@ namespace ConfArch.Api
         {
             services.AddControllers(o => o.Filters.Add(new AuthorizeFilter()));
 
+            services.AddDistributedMemoryCache();
+            //services.AddAuthentication(
+            //        JwtBearerDefaults.AuthenticationScheme)
+            //    .AddJwtBearer(options =>
+            //    {
+            //        options.Authority = "https://localhost:5000";
+            //        options.Audience = "confarch_api";
+            //    });
             services.AddAuthentication(
-                JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+                IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options =>
                 {
                     options.Authority = "https://localhost:5000";
-                    options.Audience = "confarch_api";
+                    options.ApiName = "confarch_api";
+                    options.ApiSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
+                    options.EnableCaching = true;
                 });
 
             services.AddDbContext<ConfArchDbContext>(options =>
@@ -40,6 +50,9 @@ namespace ConfArch.Api
             services.AddScoped<IConferenceRepository, ConferenceRepository>();
             services.AddScoped<IProposalRepository, ProposalRepository>();
             services.AddScoped<IAttendeeRepository, AttendeeRepository>();
+
+            services.AddAuthorization(o => o.AddPolicy("PostAttendee",
+                p => p.RequireClaim("scope", "confarch_api_postattendee")));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

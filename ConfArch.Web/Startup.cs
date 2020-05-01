@@ -1,16 +1,16 @@
 using System;
 using System.Net.Http.Headers;
-using ConfArch.Data;
-using ConfArch.Data.Repositories;
+using System.Security.Claims;
+using ConfArch.Web.Authorization;
 using ConfArch.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -71,6 +71,7 @@ namespace ConfArch.Web
 
                     options.UsePkce = true;
 
+                    options.TokenValidationParameters.RoleClaimType = "Role";
                 });
 
             services.AddHttpContextAccessor();
@@ -97,6 +98,24 @@ namespace ConfArch.Web
             //        o.ClientId = Configuration["Google:ClientId"];
             //        o.ClientSecret = Configuration["Google:ClientSecret"];
             //    });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsSpeaker", policy =>
+                    policy.RequireRole("Speaker"));
+                options.AddPolicy("CanAddConference", policy =>
+                    policy.RequireClaim("Permission", "AddConference"));
+                options.AddPolicy("YearsOfExperience",
+                    policy => policy.AddRequirements(
+                        new YearsOfExperienceRequirement(30)
+                        )
+                    );
+                options.AddPolicy("CanEditProposal",
+                    policy => policy.AddRequirements(new ProposalRequirement()));
+            });
+
+            services.AddSingleton<IAuthorizationHandler,
+                YearsOfExperienceAuthorizationHandler>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -124,7 +143,6 @@ namespace ConfArch.Web
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Conference}/{action=Index}/{id?}");
-                //endpoints.MapRazorPages();
             });
         }
     }

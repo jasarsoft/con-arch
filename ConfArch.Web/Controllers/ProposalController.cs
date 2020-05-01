@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using ConfArch.Data.Models;
 using ConfArch.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConfArch.Web.Controllers
@@ -8,10 +9,13 @@ namespace ConfArch.Web.Controllers
     public class ProposalController: Controller
     {
         private readonly IConfArchApiService _api;
+        private readonly IAuthorizationService _authorizationService;
 
-        public ProposalController(IConfArchApiService api)
+        public ProposalController(IConfArchApiService api,
+            IAuthorizationService authorizationService)
         {
             _api = api;
+            _authorizationService = authorizationService;
         }
 
         public async Task<IActionResult> Index(int conferenceId)
@@ -22,6 +26,8 @@ namespace ConfArch.Web.Controllers
             return View(await _api.GetAllProposalsForConference(conferenceId));
         }
 
+        [Authorize(Policy = "IsSpeaker")]
+        [Authorize(Policy = "YearsOfExperience")]
         public IActionResult AddProposal(int conferenceId)
         {
             ViewBag.Title = "Speaker - Add Proposal";
@@ -29,6 +35,8 @@ namespace ConfArch.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "IsSpeaker")]
+        [Authorize(Policy = "YearsOfExperience")]
         public async Task<IActionResult> AddProposal(ProposalModel proposal)
         {
             if (ModelState.IsValid)
@@ -40,6 +48,22 @@ namespace ConfArch.Web.Controllers
         {
             var proposal = await _api.ApproveProposal(proposalId);
             return RedirectToAction("Index", new { conferenceId = proposal.ConferenceId });
+        }
+
+        public async Task<IActionResult> EditProposal(ProposalModel proposal)
+        {
+            var result = await _authorizationService.AuthorizeAsync(
+                User,
+                proposal,
+                "CanEditProposal"
+                );
+
+            if (result.Succeeded)
+            {
+                return View();
+            }
+
+            return RedirectToAction("AccessDenied", "Account");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using ConfArch.Data.Models;
 using ConfArch.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConfArch.Web.Controllers
@@ -20,6 +21,7 @@ namespace ConfArch.Web.Controllers
             return View(await _api.GetAllConferences());
         }
 
+        [Authorize(Policy = "CanAddConference")]
         public IActionResult Add()
         {
             ViewBag.Title = "Organizer - Add Conference";
@@ -27,6 +29,7 @@ namespace ConfArch.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "CanAddConference")]
         public async Task<IActionResult> Add(ConferenceModel model)
         {
             if (ModelState.IsValid)

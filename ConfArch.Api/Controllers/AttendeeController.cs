@@ -1,5 +1,6 @@
 ﻿using ConfArch.Data.Models;
 using ConfArch.Data.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConfArch.Api.Controllers
@@ -16,6 +17,7 @@ namespace ConfArch.Api.Controllers
         }
 
         [HttpPost("{conferenceId}/{name}")]
+        [Authorize(Policy = "PostAttendee")]
         public IActionResult Post(int conferenceId, string name)
         {
             var attendee = repo.Add(

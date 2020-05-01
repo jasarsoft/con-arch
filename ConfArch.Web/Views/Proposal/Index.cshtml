@@ -1,4 +1,12 @@
 ﻿@model IEnumerable<ConfArch.Data.Models.ProposalModel>
+
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+
+@{ 
+    var isSpeakerAuthorizationResult = await AuthorizationService
+        .AuthorizeAsync(User, "IsSpeaker");
+}
 <div class="row">
     <div class="col-md-10 col-md-offset-2">
         <table class="table">
@@ -28,7 +36,10 @@
                 </tr>
             }
         </table>
-        <a asp-action="AddProposal" asp-route-conferenceId="@ViewBag.ConferenceId">Add</a>
 
+        @if (isSpeakerAuthorizationResult.Succeeded)
+        {
+            <a asp-action="AddProposal" asp-route-conferenceId="@ViewBag.ConferenceId">Add</a>
+        }
     </div>
 </div>

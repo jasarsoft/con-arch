@@ -16,6 +16,8 @@ namespace ConfArch.Web.Controllers
     {
         public IActionResult Login() => Challenge(new AuthenticationProperties { RedirectUri = "/" });
 
+        public IActionResult AccessDenied() => View();
+
         //private readonly IUserRepository userRepository;
 
         //public AccountController(IUserRepository userRepository)
