@@ -1,24 +1,23 @@
 ﻿using System.Threading.Tasks;
 using ConfArch.Data.Models;
-using ConfArch.Data.Repositories;
-using Microsoft.AspNetCore.Authorization;
+using ConfArch.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConfArch.Web.Controllers
 {
-    [AllowAnonymous]
-    public class ConferenceController: Controller
+    public class ConferenceController : Controller
     {
-        private readonly IConferenceRepository repo;
+        private readonly IConfArchApiService _api;
 
-        public ConferenceController(IConferenceRepository repo)
+        public ConferenceController(IConfArchApiService api)
         {
-            this.repo = repo;
+            _api = api;
         }
+
         public async Task<IActionResult> Index()
         {
             ViewBag.Title = "Organizer - Conference Overview";
-            return View(await repo.GetAll());
+            return View(await _api.GetAllConferences());
         }
 
         public IActionResult Add()
@@ -31,7 +30,7 @@ namespace ConfArch.Web.Controllers
         public async Task<IActionResult> Add(ConferenceModel model)
         {
             if (ModelState.IsValid)
-                await repo.Add(model);
+                await _api.AddConference(model);
 
             return RedirectToAction("Index");
         }

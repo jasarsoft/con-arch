@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -13,103 +12,104 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ConfArch.Web.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController: Controller
     {
-        private readonly IUserRepository userRepository;
+        public IActionResult Login() => Challenge(new AuthenticationProperties { RedirectUri = "/" });
 
-        public AccountController(IUserRepository userRepository)
-        {
-            this.userRepository = userRepository;
-        }
+        //private readonly IUserRepository userRepository;
 
-        [AllowAnonymous]
-        public IActionResult Login(string returnUrl = "/")
-        {
-            return View(new LoginModel {ReturnUrl = returnUrl});
-        }
+        //public AccountController(IUserRepository userRepository)
+        //{
+        //    this.userRepository = userRepository;
+        //}
 
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginModel model)
-        {
-            var user = userRepository.GetByUsernameAndPassword(model.Username, model.Password);
-            if (user == null)
-                return Unauthorized();
+        //[AllowAnonymous]
+        //public IActionResult Login(string returnUrl = "/")
+        //{
+        //    return View(new LoginModel { ReturnUrl = returnUrl });
+        //}
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, user.Role),
-                new Claim("FavoriteColor", user.FavoriteColor)
-            };
+        //[HttpPost]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> Login(LoginModel model)
+        //{
+        //    var user = userRepository.GetByUsernameAndPassword(model.Username, model.Password);
+        //    if (user == null)
+        //        return Unauthorized();
 
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
+        //    var claims = new List<Claim>
+        //    {
+        //        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        //        new Claim(ClaimTypes.Name, user.Name),
+        //        new Claim(ClaimTypes.Role, user.Role),
+        //        new Claim("FavoriteColor", user.FavoriteColor)
+        //    };
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
-                new AuthenticationProperties {IsPersistent = model.RememberLogin});
+        //    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        //    var principal = new ClaimsPrincipal(identity);
 
-            return LocalRedirect(model.ReturnUrl);
-        }
+        //    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
+        //        new AuthenticationProperties { IsPersistent = model.RememberLogin });
 
-        [AllowAnonymous]
-        public IActionResult LoginWithGoogle(string returnUrl = "/")
-        {
-            var props = new AuthenticationProperties
-            {
-                RedirectUri = Url.Action("GoogleLoginCallback"),
-                Items = 
-                {
-                    { "returnUrl", returnUrl }
-                }
-            };
+        //    return LocalRedirect(model.ReturnUrl);
+        //}
 
-            return Challenge(props, GoogleDefaults.AuthenticationScheme);
-        }
+        //[AllowAnonymous]
+        //public IActionResult LoginWithGoogle(string returnUrl = "/")
+        //{
+        //    var props = new AuthenticationProperties
+        //    {
+        //        RedirectUri = Url.Action("GoogleLoginCallback"),
+        //        Items =
+        //        {
+        //            { "returnUrl", returnUrl }
+        //        }
+        //    };
 
-        [AllowAnonymous]
-        public async Task<IActionResult> GoogleLoginCallback()
-        {
-            // read google identity from the temporary cookie
-            var result = await HttpContext.AuthenticateAsync(
-                ExternalAuthenticationDefaults.AuthenticationScheme);
+        //    return Challenge(props, GoogleDefaults.AuthenticationScheme);
+        //}
 
-            var externalClaims = result.Principal.Claims.ToList();
+        //[AllowAnonymous]
+        //public async Task<IActionResult> GoogleLoginCallback()
+        //{
+        //    // read google identity from the temporary cookie
+        //    var result = await HttpContext.AuthenticateAsync(
+        //        ExternalAuthenticationDefaults.AuthenticationScheme);
 
-            var subjectIdClaim = externalClaims.FirstOrDefault(
-                x => x.Type == ClaimTypes.NameIdentifier);
-            var subjectValue = subjectIdClaim.Value;
+        //    var externalClaims = result.Principal.Claims.ToList();
 
-            var user = userRepository.GetByGoogleId(subjectValue);
+        //    var subjectIdClaim = externalClaims.FirstOrDefault(
+        //        x => x.Type == ClaimTypes.NameIdentifier);
+        //    var subjectValue = subjectIdClaim.Value;
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, user.Role),
-                new Claim("FavoriteColor", user.FavoriteColor)
-            };
+        //    var user = userRepository.GetByGoogleId(subjectValue);
 
-            var identity = new ClaimsIdentity(claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
+        //    var claims = new List<Claim>
+        //    {
+        //        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        //        new Claim(ClaimTypes.Name, user.Name),
+        //        new Claim(ClaimTypes.Role, user.Role),
+        //        new Claim("FavoriteColor", user.FavoriteColor)
+        //    };
 
-            // delete temporary cookie used during google authentication
-            await HttpContext.SignOutAsync(
-                ExternalAuthenticationDefaults.AuthenticationScheme);
+        //    var identity = new ClaimsIdentity(claims,
+        //        CookieAuthenticationDefaults.AuthenticationScheme);
+        //    var principal = new ClaimsPrincipal(identity);
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme, principal);
+        //    // delete temporary cookie used during google authentication
+        //    await HttpContext.SignOutAsync(
+        //        ExternalAuthenticationDefaults.AuthenticationScheme);
 
-            return LocalRedirect(result.Properties.Items["returnUrl"]);
-        }
+        //    await HttpContext.SignInAsync(
+        //        CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Redirect("/");
-        }
+        //    return LocalRedirect(result.Properties.Items["returnUrl"]);
+        //}
 
+        //public async Task<IActionResult> Logout()
+        //{
+        //    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        //    return Redirect("/");
+        //}
     }
 }

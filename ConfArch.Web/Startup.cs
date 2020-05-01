@@ -28,27 +28,30 @@ namespace ConfArch.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
-            services.AddRazorPages();
-            services.AddScoped<IConferenceRepository, ConferenceRepository>();
-            services.AddScoped<IProposalRepository, ProposalRepository>();
-            services.AddScoped<IAttendeeRepository, AttendeeRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddControllersWithViews(o =>
+            o.Filters.Add(new AuthorizeFilter()));
+            //services.AddRazorPages();
+            //services.AddScoped<IConferenceRepository, ConferenceRepository>();
+            //services.AddScoped<IProposalRepository, ProposalRepository>();
+            //services.AddScoped<IAttendeeRepository, AttendeeRepository>();
+            //services.AddScoped<IUserRepository, UserRepository>();
 
-            services.AddDbContext<ConfArchDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), 
-                    assembly => assembly.MigrationsAssembly(typeof(ConfArchDbContext).Assembly.FullName)));
+            //services.AddDbContext<ConfArchDbContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+            //        assembly => assembly.MigrationsAssembly(typeof(ConfArchDbContext).Assembly.FullName)));
 
             services.AddAuthentication(o =>
-                {
-                    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                })
+            {
+                o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
                 .AddCookie()
                 .AddOpenIdConnect(options =>
                 {
                     options.Authority = "https://localhost:5000";
+
                     options.ClientId = "confarch_web";
+                    //Store in application secrets
                     options.ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
                     options.CallbackPath = "/signin-oidc";
 
@@ -121,7 +124,7 @@ namespace ConfArch.Web
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Conference}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
+                //endpoints.MapRazorPages();
             });
         }
     }

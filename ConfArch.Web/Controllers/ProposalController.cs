@@ -1,30 +1,25 @@
 ﻿using System.Threading.Tasks;
 using ConfArch.Data.Models;
-using ConfArch.Data.Repositories;
-using Microsoft.AspNetCore.Authorization;
+using ConfArch.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConfArch.Web.Controllers
 {
-    [Authorize]
     public class ProposalController: Controller
     {
-        private readonly IConferenceRepository conferenceRepo;
-        private readonly IProposalRepository proposalRepo;
+        private readonly IConfArchApiService _api;
 
-        public ProposalController(IConferenceRepository conferenceRepo, IProposalRepository proposalRepo)
+        public ProposalController(IConfArchApiService api)
         {
-            this.conferenceRepo = conferenceRepo;
-            this.proposalRepo = proposalRepo;
+            _api = api;
         }
 
         public async Task<IActionResult> Index(int conferenceId)
-        {
-            var conference = await conferenceRepo.GetById(conferenceId);      
-            ViewBag.Title = $"Speaker - Proposals For Conference {conference.Name} {conference.Location}";
+        {  
+            ViewBag.Title = $"Speaker - Proposals For Conference {conferenceId}";
             ViewBag.ConferenceId = conferenceId;
 
-            return View(await proposalRepo.GetAllForConference(conferenceId));
+            return View(await _api.GetAllProposalsForConference(conferenceId));
         }
 
         public IActionResult AddProposal(int conferenceId)
@@ -37,13 +32,13 @@ namespace ConfArch.Web.Controllers
         public async Task<IActionResult> AddProposal(ProposalModel proposal)
         {
             if (ModelState.IsValid)
-                await proposalRepo.Add(proposal);
+                await _api.AddProposal(proposal);
             return RedirectToAction("Index", new {conferenceId = proposal.ConferenceId});
         }
 
         public async Task<IActionResult> Approve(int proposalId)
         {
-            var proposal = await proposalRepo.Approve(proposalId);
+            var proposal = await _api.ApproveProposal(proposalId);
             return RedirectToAction("Index", new { conferenceId = proposal.ConferenceId });
         }
     }

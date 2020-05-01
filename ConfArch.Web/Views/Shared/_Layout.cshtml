@@ -15,9 +15,9 @@
             <img src="~/img/ConfArchSmall.png" style="max-width:100%" />
         </div>
         <div class="col-md-9 titlecol">
-            <span class="title">@ViewBag.Title</span>           
+            <span class="title">@ViewBag.Title</span>
         </div>
-        <div class="col-md-4">
+        @*<div class="col-md-4">
             @if (User.Identity.IsAuthenticated)
             {
                 <h3>@User.Identity.Name</h3>
@@ -30,13 +30,12 @@
             }
         </div>
         <div class="col-md-2 titlecol">
-            <partial name="_LoginPartial"/>
+            <partial name="_LoginPartial" />
+        </div>*@
+    </div>
+        <div>
+            @RenderBody()
         </div>
     </div>
-    <div>
-        @RenderBody()
-    </div>
-</div>
 </body>
-@RenderSection("scripts", false)
 </html>
