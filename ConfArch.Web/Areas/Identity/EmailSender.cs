@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.UI.Services;
+//using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
 namespace ConfArch.Web.Areas.Identity
 {
-    public class EmailSender : IEmailSender
+    public class EmailSender
     {
         private readonly string _apiKey;
         private readonly string _fromName;
